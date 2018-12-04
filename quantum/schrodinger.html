@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset=utf-8>
+	<title>Quantum</title>
+	<style>
+		html, body { margin: 0; width:100%; height:100%;}
+		canvas { width: 100%; height: 100% ; display:block;}
+		.toolbar {
+			width:200px;
+			background-color:#e8e8e8;
+			position:absolute;
+			padding:40px 20px;
+			box-sizing:border-box;
+			font-family: arial;
+			box-shadow: -2px -2px 2px #949494 inset;
+		}
+		#collapsible {
+			margin-bottom: 10px;
+		}
+		.tool-section {
+			border-width: 0px 0px 1px 0px;
+			border-style: solid;
+			border-color: #bcb9b9;
+			margin: 12px 0px 20px 0px;
+			padding-bottom: 8px;
+			padding-left: 4px;
+		}
+		select {
+			margin: 3px 1px;
+		}
+		button {
+			hsla(0, 0%, 84%, 1)
+		}
+	</style>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/99/three.min.js"></script>
+	<script src="vecn.js"></script>
+	<script src="https://threejs.org/examples/js/controls/OrbitControls.js"></script>
+	<script src="threePlot.js"></script>
+	<script>
+		var w, h; //width, height of window
+		var R, I, V; //real and imag part of psi, the potential
+		var n = 400; //sample points
+		var xmin = -3, xmax = 3;
+		var dt = .1; //time step
+		var m = .5; //mass
+		var speed = 10; //simulation steps per drawing step
+		
+		function detectIE() {
+			var ua = window.navigator.userAgent;
+
+			var msie = ua.indexOf('MSIE ');
+			if (msie > 0) {
+			// IE 10 or older => return version number
+			return parseInt(ua.substring(msie + 5, ua.indexOf('.', msie)), 10);
+			}
+
+			var trident = ua.indexOf('Trident/');
+			if (trident > 0) {
+			// IE 11 => return version number
+			var rv = ua.indexOf('rv:');
+			return parseInt(ua.substring(rv + 3, ua.indexOf('.', rv)), 10);
+			}
+
+			var edge = ua.indexOf('Edge/');
+			if (edge > 0) {
+			// Edge (IE 12+) => return version number
+			return parseInt(ua.substring(edge + 5, ua.indexOf('.', edge)), 10);
+			}
+
+			// other browser
+			return false;
+		}
+		console.log(detectIE());
+		function toggleToolbar(){
+			var toggleBtn = document.getElementById('toggleBtn');
+			if( toggleBtn.innerHTML == 'hide'){
+				document.getElementById('collapsible').style.display = 'none';
+				toggleBtn.innerHTML = 'show';
+			}else{
+				document.getElementById('collapsible').style.display = '';
+				toggleBtn.innerHTML = 'hide';
+			}
+		}
+		function toggleRunning(){
+			if(plot.running){
+				plot.stopLoop();
+				document.getElementById('pauseBtn').innerHTML = 'play';
+			}else{
+				plot.startLoop();
+				document.getElementById('pauseBtn').innerHTML = 'pause';
+			}
+		}
+		function run(){
+			var psi0 = document.getElementById('psi0');
+			var potential = document.getElementById('potential');
+			var displaytype = document.getElementById('displaytype');
+			
+			dt = .1;
+			speed = 10;
+			n = 400;
+			if( psi0.value == 'sine1' || psi0.value == 'sine2' || psi0.value == 'sine12'){
+				dt = .2;
+				speed = 50;
+				n = 200;
+				if(potential.value == 'HOsc')
+					dt = .01;
+			}else if(psi0.value == 'wavepacket'){
+				speed = 5;
+			}
+			document.getElementById('speedSpan').innerHTML = speed*dt;
+			R = new Array(n).fill(0);
+			I = new Array(n).fill(0);
+			V = new Array(n).fill(0);
+			
+			var dx = (xmax - xmin)/(n - 1)
+			var x = xmin;
+			
+			switch( psi0.value ){
+				case 'wavepacket':
+					for(let i=0; i<n; i++){
+						R[i] = Math.exp(-3*(x)**2)*Math.cos(20*x);
+						I[i] = Math.exp(-3*(x)**2)*Math.sin(20*x);
+						x+= dx;
+					}			
+				break;
+				case 'gaussian':
+					
+					for(let i=0; i<n; i++){
+						R[i] = Math.exp(-6*x**2);
+						x+= dx;
+					}
+				break;
+				case 'sine1':
+					var FSW = potential.value == 'FSW';
+					for(let i=0; i<n; i++){
+						if(FSW){
+							R[i] = Math.abs(x) > 2 ? 0 : Math.sin( -Math.PI*(x - 2) / 4 );
+						}else{
+							R[i] = Math.sin(-Math.PI*(x - xmax) / (2*xmax))
+						}
+						x+= dx;
+					}
+				break;
+				case 'sine2':
+					var FSW = potential.value == 'FSW';
+					for(let i=0; i<n; i++){
+						if(FSW){
+							R[i] = Math.abs(x) > 2 ? 0 : Math.sin( -Math.PI*(x - 2)/2 );
+						}else{
+							R[i] = Math.sin(-Math.PI*(x - xmax) / (xmax))
+						}
+						x+= dx;
+					}
+				break;
+				case 'sine12':
+					var FSW = potential.value == 'FSW';
+					for(let i=0; i<n; i++){
+						if(FSW){
+							R[i] = Math.abs(x) > 2 ? 0 : Math.sin(-Math.PI*(x - 2) / 2) + Math.sin(-Math.PI*(x - 2) / 4);
+						}else{
+							R[i] = Math.sin(-Math.PI*(x - xmax) / (xmax)) + Math.sin(-Math.PI*(x - xmax) / (2*xmax))
+						}
+						x+= dx;
+					}
+				break;
+				
+			}	
+			
+			var x = xmin;
+			switch( potential.value ){
+				case 'InfSW':
+				break;
+				case 'HOsc':
+					for(let i=0; i<n; i++){
+						V[i] = .03*x**2;
+						x+= dx;
+					}
+				break;
+				case 'FSW':
+					for(let i=0; i<n; i++){
+						V[i] = Math.abs(x) > 2 ? .15 : 0;
+						x+= dx;
+					}
+				break;
+			}
+			
+			R = new vecn( R );
+			I = new vecn( I );
+			V = new vecn( V );
+			
+			norm = Math.sqrt(R.length_2() + I.length_2());
+			R.sScale( 1/norm );
+			I.sScale( 1/norm );
+			plot.stopLoop();
+			plot.animationFunction = function( plot ){
+				for(let i=0; i<speed; i++){
+					// ### ACTUAL SIMULATION ###
+					R = R.add( Hamiltonian(I).scale( dt ) );
+					I = I.add( Hamiltonian(R).scale( -dt ) );
+					R.x[0] = 0;
+					I.x[0] = 0;
+					R.x[R.x.length - 1] = 0;
+					I.x[I.x.length - 1] = 0;
+					
+					//it looks like the simulation is wrong R is updated and then used in I, but this
+					//actually implements a half-step method
+				}
+				if( displaytype.value == 'psi' ){
+					plot.plot( R.x, I.x );
+				}else if( displaytype.value == 'psi2' ){
+					plot.plot( ( R.mult(R).add( I.mult(I) ) ).scale(8).x, R.scale(0).x );
+				}else{
+				
+				}
+			};
+			plot.startLoop();
+			
+		}
+		
+		function laplace( psi ){
+			psiL = psi.rotateArray( 1 );
+			psiR = psi.rotateArray( -1 );
+			
+			return psiL.add( psiR ).add( psi.scale( -2 ) );
+		}
+		function Hamiltonian( psi ){
+			return laplace(psi).scale( -1/(2*m) ).add( psi.mult( V ) );
+		}
+		
+		function init(){
+			plot = new ThreePlot();
+			run();
+		}
+		function init2(){
+			window.onkeydown = function(e){
+				var charr = String.fromCharCode(e.keyCode);
+				if(charr == 'R'){
+					initCurve();
+				}
+			};
+			
+		}
+	</script>
+</head>
+<body onload = "init();" style="width:100%;height:100%;">
+	<div class="toolbar">
+		<div id="collapsible">
+		<div class="tool-section">
+			Initial Wave Function
+			<select id="psi0">
+				<option value="wavepacket">Wave Packet</option>
+				<option value="gaussian">Gaussian</option>
+				<option value="sine1">Sine1</option>
+				<option value="sine2">Sine2</option>
+				<option value="sine12">Sine1 + Sine2</option>
+			</select>
+		</div>
+		<div class="tool-section">
+			Potential
+			<select id="potential">
+				<option value="InfSW">Inf Square well</option>
+				<option value="HOsc">Harmonic Oscillator</option>
+				<option value="FSW">Finite Sq Well</option>
+			</select>
+		</div>
+		<div class="tool-section">
+			Display
+			<select id="displaytype">
+				<option value="psi">Psi</option>
+				<option value="psi2">|Psi|^2</option>
+			</select>
+		</div>
+		Simulation Speed: <span id="speedSpan"></span><br><br>
+		
+		<button id="selectBtn" onclick="run();">reset</button>
+		<button id="pauseBtn" onclick="toggleRunning();">pause</button>
+		</div>
+		<button id="toggleBtn" onclick="toggleToolbar();">hide</button>
+
+	</div>
+	<script>
+	function detectIE() {
+		var ua = window.navigator.userAgent;
+		var msie = ua.indexOf('MSIE ');
+		if (msie > 0) {
+		// IE 10 or older => return version number
+		return parseInt(ua.substring(msie + 5, ua.indexOf('.', msie)), 10);
+		}
+
+		var trident = ua.indexOf('Trident/');
+		if (trident > 0) {
+		// IE 11 => return version number
+		var rv = ua.indexOf('rv:');
+		return parseInt(ua.substring(rv + 3, ua.indexOf('.', rv)), 10);
+		}
+
+		var edge = ua.indexOf('Edge/');
+		if (edge > 0) {
+		// Edge (IE 12+) => return version number
+		return parseInt(ua.substring(edge + 5, ua.indexOf('.', edge)), 10);
+		}
+
+		// other browser
+		return false;
+	}
+	if(detectIE()){
+		alert('This simulation does not work in Internet Explorer sadly')
+	}
+	</script>
+</body>
+</html>
