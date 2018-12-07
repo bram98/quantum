@@ -5,7 +5,7 @@ Set the simulation to Wavepacket + Infinite square well.
 The wavefunction tends to rotate either clockwise or anti-clockwise in space, like a corkscrew. What does the orientation of the wave function say about the direction of movement? What happens when the wave function is flat? With flat I mean the wavefuntion doesn't rotate like a corkscrew, which happens when the particle is near the edges. The wave function tends to spread over time. Which observable measures the spread of the wave function?
 <br><br>
 Set the simulation to Sine(?) + Infinite square well.
-The sine solutions move really slowly, why do they move so slow? Set the display to |psi|^2, also known as probability density. Sine1 and Sine2 are stationary states, why? Why is Sine12 not a stationay state?.
+The sine solutions move really slowly, why do they move so slow? Set the display to |psi|^2, which you know as probability density. Sine1 and Sine2 are stationary states, why? Why is Sine12 not a stationay state?.
 <br><br>
 Which potential makes the gaussian stationary? Note: it is not actually the solution, I just changed the parameter until it was kind of stationary.
 <br><br>
@@ -13,4 +13,4 @@ Set the simulation to Wavepacket + Harmonic Oscillator
 Think about the rotation mentioned earlier. Why does the rotation rate (in space) slow down as the particle moves from the middle? Set the display to |Psi|^2. Does this make intuitive sense?
 <br><br>
 Set the simulation to Sine(?) + Finite square well
-The simulation is a bit wavy because I used a cut-off sine instead of the eigenstates of the finite square well. Can you spot where the well ends? Just from observation, is the energy of these states higher or lower than the well? The edges of the sine wave look quite smooth, can you explain why?
+The simulation is a bit wavy because I used a cut-off sine instead of the eigenstates of the finite square well. Can you spot where the well ends? Just from observation, is the energy of these states higher or lower than the well? The edges of the sine wave look quite smooth, which function describe these edges?
