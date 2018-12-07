@@ -10,7 +10,7 @@ The sine solutions move really slowly, why do they move so slow? Set the display
 Which potential makes the gaussian stationary? Note: it is not actually the solution, I just changed the parameter until it was kind of stationary.
 <br><br>
 Set the simulation to Wavepacket + Harmonic Oscillator
-Think about the rotation mentioned earlier. Why does the rotation rate (in space) slow down as the particle moves from the middle? Set the display to |Psi|^2. Does this make intuitive sense?
+Think about the rotation mentioned earlier. Why does the rotation rate (in space) slow down as the particle moves from the middle? Set the display to |Psi|^2. Does what you see make intuitive sense?
 <br><br>
 Set the simulation to Sine(?) + Finite square well
 The simulation is a bit wavy because I used a cut-off sine instead of the eigenstates of the finite square well. Can you spot where the well ends? Just from observation, is the energy of these states higher or lower than the well? The edges of the sine wave look quite smooth, which function describe these edges?
