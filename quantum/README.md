@@ -7,7 +7,7 @@ The wavefunction tends to rotate either clockwise or anti-clockwise in space, li
 Set the simulation to Sine(?) + Infinite square well.
 The sine solutions move really slowly, why do they move so slow? Set the display to |psi|^2, which you know as probability density. Sine1 and Sine2 are stationary states, why? Why is Sine12 not a stationay state?.
 <br><br>
-Which potential makes the gaussian stationary? Note: it is not actually the solution, I just changed the parameter until it was kind of stationary.
+Which potential makes the gaussian stationary? Note: it is not actually the proper eigenstate, I just changed the parameter of the gaussian until it was kind of stationary.
 <br><br>
 Set the simulation to Wavepacket + Harmonic Oscillator
 Think about the rotation mentioned earlier. Why does the rotation rate (in space) slow down as the particle moves from the middle? Set the display to |Psi|^2. Does what you see make intuitive sense?
