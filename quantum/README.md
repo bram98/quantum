@@ -1,7 +1,7 @@
 <h2>Schrodinger Equation in 1D</h2>
 This simulation solves the time dependent Schrodinger equation for one dimension. To open it download all the files and open schrodinger.html in any browser (that is not internet explorer). The long axis is the x-axis and the shorter axes represent the real and imaginary parts of the wave function. The simulation technique is rather simple so you might see some artifacts for some combinations of wave function and potential  (sine + harmonic oscillator, sine + finite square well). Press 'reset' to update changes made in the options. You can zoom by scrolling. Play with the simulation and answer these questions for yourself.
 <br>
-
+<br>
 Set the simulation to Wavepacket + Infinite square well.
 The wavefunction tends to rotate either clockwise or anti-clockwise in space, like a corkscrew. What does the orientation of the wave function say about the direction of movement? What happens when the wave function is flat? With flat I mean the wavefuntion doesn't rotate like a corkscrew, which happens when the particle is near the edges. The wave function tends to spread over time. Which observable measures the spread of the wave function?
 
